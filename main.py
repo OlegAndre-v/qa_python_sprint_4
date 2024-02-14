@@ -56,5 +56,3 @@ class BooksCollector:
     def get_list_of_favorites_books(self):
         return self.favorites
 
-
-#
