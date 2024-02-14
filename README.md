@@ -34,3 +34,4 @@ test_add_book_in_favorites_add_one_book_in_favorites
 
 test_delete_book_from_favorites_add_two_books_delete_one_book
 Этот тест проверяет метод delete_book_from_favorites, добавляя две книги в избранное и удаляя одну из них. Ожидается, что в списке избранных остается только одна книга.
+
