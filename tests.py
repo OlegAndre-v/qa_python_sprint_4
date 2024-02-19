@@ -65,7 +65,7 @@ class TestBooksCollector:
         (book, genre2, 1),
         (book, genre1, 0)
     ])
-    def test_get_books_for_children_add_three_books_only_one_for_children(self, books_collector, book_name, genre, expected_result):
+    def test_get_books_for_children_add_book_check_for_children_or_not(self, books_collector, book_name, genre, expected_result):
         books_collector.add_new_book(book_name)
         books_collector.set_book_genre(book_name, genre)
         assert len(books_collector.get_books_for_children()) == expected_result
