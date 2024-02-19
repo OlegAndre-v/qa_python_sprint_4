@@ -1,5 +1,4 @@
 import pytest
-from main import BooksCollector
 
 
 class TestBooksCollector:
@@ -13,9 +12,8 @@ class TestBooksCollector:
     genre2 = 'Мультфильмы'
     # test data
 
-    @pytest.fixture(scope='function')
-    def books_collector(self):
-        return BooksCollector()
+    # Привет, Ирина! Спасибо за твою работу!
+    # Постарался учесть и добавить изменения по всем замечениям.
 
     @pytest.mark.parametrize('book_name, expected_books', [
         (book, {book: ''}),
@@ -26,19 +24,15 @@ class TestBooksCollector:
         books_collector.add_new_book(book_name)
         assert books_collector.get_books_genre() == expected_books
 
-    @pytest.mark.parametrize('book_name, expected_result', [
-        (book, 1)
-    ])
-    def test_add_new_book_add_two_books_same_name(self, books_collector, book_name, expected_result):
-        books_collector.add_new_book(book_name)
-        assert len(books_collector.get_books_genre()) == expected_result
+    # Убрал параметризацию
+    def test_add_new_book_add_two_books_same_name(self, books_collector):
+        books_collector.add_new_book(self.book)
+        assert len(books_collector.get_books_genre()) == 1
 
-    @pytest.mark.parametrize('invalid_book_name, expected_result', [
-        (invalid_book, {})
-    ])
-    def test_add_new_book_add_invalid_book_name(self, books_collector, invalid_book_name, expected_result):
-        books_collector.add_new_book(invalid_book_name)
-        assert books_collector.get_books_genre() == expected_result
+    # up
+    def test_add_new_book_add_invalid_book_name(self, books_collector):
+        books_collector.add_new_book(self.invalid_book)
+        assert books_collector.get_books_genre() == {}
 
     @pytest.mark.parametrize('book_name, genre_name, expected_genre', [
         (book, genre1, genre1),
@@ -66,14 +60,15 @@ class TestBooksCollector:
             books_collector.set_book_genre(book_name, genre)
         assert books_collector.get_books_with_specific_genre(genres[0]) == expected_result
 
-    @pytest.mark.parametrize('book_names, genres, expected_result', [
-        ([book, book_40_char, book_1_char], [genre1, genre2, invalid_genre], [book_40_char])
+    # Изменил набор данных для корректной параметризации.
+    @pytest.mark.parametrize('book_name, genre, expected_result', [
+        (book, genre2, 1),
+        (book, genre1, 0)
     ])
-    def test_get_books_for_children_add_three_books_only_one_for_children(self, books_collector, book_names, genres, expected_result):
-        for book_name, genre in zip(book_names, genres):
-            books_collector.add_new_book(book_name)
-            books_collector.set_book_genre(book_name, genre)
-        assert books_collector.get_books_for_children() == expected_result
+    def test_get_books_for_children_add_three_books_only_one_for_children(self, books_collector, book_name, genre, expected_result):
+        books_collector.add_new_book(book_name)
+        books_collector.set_book_genre(book_name, genre)
+        assert len(books_collector.get_books_for_children()) == expected_result
 
     @pytest.mark.parametrize('book_name, expected_result', [
         (book, [book])
