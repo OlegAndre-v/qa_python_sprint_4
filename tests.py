@@ -12,9 +12,6 @@ class TestBooksCollector:
     genre2 = 'Мультфильмы'
     # test data
 
-    # Привет, Ирина! Спасибо за твою работу!
-    # Постарался учесть и добавить изменения по всем замечениям.
-
     @pytest.mark.parametrize('book_name, expected_books', [
         (book, {book: ''}),
         (book_1_char, {book_1_char: ''}),
@@ -24,12 +21,10 @@ class TestBooksCollector:
         books_collector.add_new_book(book_name)
         assert books_collector.get_books_genre() == expected_books
 
-    # Убрал параметризацию
     def test_add_new_book_add_two_books_same_name(self, books_collector):
         books_collector.add_new_book(self.book)
         assert len(books_collector.get_books_genre()) == 1
 
-    # up
     def test_add_new_book_add_invalid_book_name(self, books_collector):
         books_collector.add_new_book(self.invalid_book)
         assert books_collector.get_books_genre() == {}
@@ -60,7 +55,6 @@ class TestBooksCollector:
             books_collector.set_book_genre(book_name, genre)
         assert books_collector.get_books_with_specific_genre(genres[0]) == expected_result
 
-    # Изменил набор данных для корректной параметризации.
     @pytest.mark.parametrize('book_name, genre, expected_result', [
         (book, genre2, 1),
         (book, genre1, 0)
