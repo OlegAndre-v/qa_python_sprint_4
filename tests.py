@@ -1,24 +1,83 @@
-from main import BooksCollector
+import pytest
 
-# класс TestBooksCollector объединяет набор тестов, которыми мы покрываем наше приложение BooksCollector
-# обязательно указывать префикс Test
+
 class TestBooksCollector:
+    # test data
+    book_1_char = 'Я'
+    book_40_char = 'Приключения юного тестировщика и питона.'
+    book = 'Пот, кровь и автоматизация'
+    invalid_book = '12345678901234567890123456789012345678902'
+    invalid_genre = 'Хентай'
+    genre1 = 'Ужасы'
+    genre2 = 'Мультфильмы'
+    # test data
 
-    # пример теста:
-    # обязательно указывать префикс test_
-    # дальше идет название метода, который тестируем add_new_book_
-    # затем, что тестируем add_two_books - добавление двух книг
-    def test_add_new_book_add_two_books(self):
-        # создаем экземпляр (объект) класса BooksCollector
-        collector = BooksCollector()
+    @pytest.mark.parametrize('book_name, expected_books', [
+        (book, {book: ''}),
+        (book_1_char, {book_1_char: ''}),
+        (book_40_char, {book_40_char: ''})
+    ])
+    def test_add_new_book_add_one_valid_book(self, books_collector, book_name, expected_books):
+        books_collector.add_new_book(book_name)
+        assert books_collector.get_books_genre() == expected_books
 
-        # добавляем две книги
-        collector.add_new_book('Гордость и предубеждение и зомби')
-        collector.add_new_book('Что делать, если ваш кот хочет вас убить')
+    def test_add_new_book_add_two_books_same_name(self, books_collector):
+        books_collector.add_new_book(self.book)
+        assert len(books_collector.get_books_genre()) == 1
 
-        # проверяем, что добавилось именно две
-        # словарь books_rating, который нам возвращает метод get_books_rating, имеет длину 2
-        assert len(collector.get_books_rating()) == 2
+    def test_add_new_book_add_invalid_book_name(self, books_collector):
+        books_collector.add_new_book(self.invalid_book)
+        assert books_collector.get_books_genre() == {}
 
-    # напиши свои тесты ниже
-    # чтобы тесты были независимыми в каждом из них создавай отдельный экземпляр класса BooksCollector()
+    @pytest.mark.parametrize('book_name, genre_name, expected_genre', [
+        (book, genre1, genre1),
+        (book, genre2, genre2)
+    ])
+    def test_set_book_genre_set_exist_genre(self, books_collector, book_name, genre_name, expected_genre):
+        books_collector.add_new_book(book_name)
+        books_collector.set_book_genre(book_name, genre_name)
+        assert books_collector.get_book_genre(book_name) == expected_genre
+
+    @pytest.mark.parametrize('book_name, invalid_genre, expected_genre', [
+        (book, invalid_genre, '')
+    ])
+    def test_set_book_genre_set_invalid_genre(self, books_collector, book_name, invalid_genre, expected_genre):
+        books_collector.add_new_book(book_name)
+        books_collector.set_book_genre(book_name, invalid_genre)
+        assert books_collector.get_book_genre(book_name) == expected_genre
+
+    @pytest.mark.parametrize('book_names, genres, expected_result', [
+        ([book, book_40_char, book_1_char], [genre1, genre2, invalid_genre], [book])
+    ])
+    def test_get_books_with_specific_genre_add_three_books(self, books_collector, book_names, genres, expected_result):
+        for book_name, genre in zip(book_names, genres):
+            books_collector.add_new_book(book_name)
+            books_collector.set_book_genre(book_name, genre)
+        assert books_collector.get_books_with_specific_genre(genres[0]) == expected_result
+
+    @pytest.mark.parametrize('book_name, genre, expected_result', [
+        (book, genre2, 1),
+        (book, genre1, 0)
+    ])
+    def test_get_books_for_children_add_book_check_for_children_or_not(self, books_collector, book_name, genre, expected_result):
+        books_collector.add_new_book(book_name)
+        books_collector.set_book_genre(book_name, genre)
+        assert len(books_collector.get_books_for_children()) == expected_result
+
+    @pytest.mark.parametrize('book_name, expected_result', [
+        (book, [book])
+    ])
+    def test_add_book_in_favorites_add_one_book_in_favorites(self, books_collector, book_name, expected_result):
+        books_collector.add_new_book(book_name)
+        books_collector.add_book_in_favorites(book_name)
+        assert books_collector.get_list_of_favorites_books() == expected_result
+
+    @pytest.mark.parametrize('book_names, expected_result', [
+        ([book, book_40_char], 1)
+    ])
+    def test_delete_book_from_favorites_add_two_books_delete_one_book(self, books_collector, book_names, expected_result):
+        for book in book_names:
+            books_collector.add_new_book(book)
+            books_collector.add_book_in_favorites(book)
+        books_collector.delete_book_from_favorites(book_names[0])
+        assert len(books_collector.get_list_of_favorites_books()) == expected_result
